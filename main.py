@@ -36,8 +36,6 @@ def translate_text():
     t = template.replace('{Source}', source_language).replace('{Target}', target_language)
     #print(t)
 
-
-
     model = OllamaLLM(model="llama3.1") 
     prompt = ChatPromptTemplate.from_template(t) 
     chain = prompt | model
@@ -45,7 +43,11 @@ def translate_text():
     try:
         translated_texts = []
         for i in range(totalOwners):
-          result = chain.invoke({"Text": texts_to_translate[i]})
+          text = texts_to_translate[i]['text']
+          print('history:', text)
+          if text != '':
+            result = chain.invoke({"Text": text})
+          else: result = ''
           translated_texts.append(result)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -82,8 +84,6 @@ def translate_defects():
     t = template.replace('{Source}', source_language).replace('{Target}', target_language)
     #print(t)
 
-
-
     model = OllamaLLM(model="llama3.1") 
     prompt = ChatPromptTemplate.from_template(t) 
     chain = prompt | model
@@ -93,7 +93,11 @@ def translate_defects():
         for i in range(totalOwners):
           defects_owner = []
           for j in range(defects_to_translate[i].get('numD')):
-            result = chain.invoke({"Text": defects_to_translate[i].get('formDataD')[j]})
+            text = defects_to_translate[i].get('formDataD')[j]['text']
+            print('defect:', text)
+            if text != '':
+                result = chain.invoke({"Text": text})
+            else: result = ''
             defects_owner.append(result)
           translated_defects.append(defects_owner)
     except Exception as e:
